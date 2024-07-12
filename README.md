@@ -52,6 +52,10 @@ This application should be run on a physical Android device with UVC enabled dev
 *   With your Android device connected to your computer and developer mode
     enabled, click on the green Run arrow in Android Studio.
 
+## Reference
+*   https://github.com/tensorflow/examples/blob/master/lite/examples/object_detection/android/README.md
+*   https://github.com/jiangdongguo/AndroidUSBCamera
+
 
 
 
