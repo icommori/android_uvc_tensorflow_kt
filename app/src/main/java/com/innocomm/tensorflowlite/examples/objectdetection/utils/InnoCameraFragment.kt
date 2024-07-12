@@ -43,6 +43,9 @@ import com.jiangdg.ausbc.render.effect.AbstractEffect
 import com.jiangdg.ausbc.render.env.RotateType
 import com.jiangdg.ausbc.utils.Logger
 import com.jiangdg.ausbc.utils.SettableFuture
+import com.jiangdg.ausbc.utils.Utils
+import com.jiangdg.ausbc.utils.bus.BusKey
+import com.jiangdg.ausbc.utils.bus.EventBus
 import com.jiangdg.ausbc.widget.IAspectRatio
 import com.jiangdg.usb.USBMonitor
 import java.util.concurrent.TimeUnit
@@ -158,6 +161,7 @@ abstract class InnoCameraFragment : BaseFragment(), ICameraStateCallBack {
                             format: IPreviewDataCallBack.DataFormat
                         ) {
                             onPreviewCallBack(data,width,height,format)
+                            emitFrameRate()
                         }
                     }) }
                     openCamera(mCameraView)
@@ -182,8 +186,23 @@ abstract class InnoCameraFragment : BaseFragment(), ICameraStateCallBack {
         })
         mCameraClient?.register()
     }
-
+//innocomm
     abstract fun onPreviewCallBack(data: ByteArray?, width: Int, height: Int, format: IPreviewDataCallBack.DataFormat)
+    private var mFrameRate = 0
+    private var mEndTime: Long = 0L
+    private var mStartTime = System.currentTimeMillis()
+    private fun emitFrameRate() {
+        mFrameRate++
+        mEndTime = System.currentTimeMillis()
+        if (mEndTime - mStartTime >= 1000) {
+            if (Utils.debugCamera) {
+                Logger.i(TAG, "camera render frame rate is $mFrameRate fps-->${Thread.currentThread().name}")
+            }
+            EventBus.with<Int>(BusKey.KEY_FRAME_RATE).postMessage(mFrameRate)
+            mStartTime = mEndTime
+            mFrameRate = 0
+        }
+    }
 
     protected fun unRegisterMultiCamera() {
         mCameraMap.values.forEach {
