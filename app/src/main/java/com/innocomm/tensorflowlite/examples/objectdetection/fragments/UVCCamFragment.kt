@@ -511,7 +511,7 @@ class UVCCamFragment : InnoCameraFragment(), View.OnClickListener,
                     }
                     //innocomm
                     //updateResolution(previewSizes[index].width, previewSizes[index].height)
-                    Application.previewSize = Size(previewSizes[index].width, previewSizes[index].height)
+                    Application.getInstance().setPreviewSize(Size(previewSizes[index].width, previewSizes[index].height))
                     mMainHandler.postDelayed({ refreshFragment()},0)
                 }
             }

@@ -16,19 +16,30 @@
 package com.innocomm.tensorflowlite.examples.objectdetection
 
 import android.content.Context
+import android.util.Log
 import android.util.Size
 import androidx.multidex.MultiDex
 import com.innocomm.tensorflowlite.examples.objectdetection.utils.MMKVUtils
 import com.jiangdg.ausbc.base.BaseApplication
+import kotlin.math.abs
 
 class Application: BaseApplication() {
 
     companion object {
+        private const val TAG = "InnoApplication"
         var previewSize = Size(640,480)
-        lateinit var instance: Application
+        val modelInputRatio = 640f / 480f
+        val maxDifference = 1e-5
+        private lateinit var instance: Application
+        var mShouldRestrict = false
         fun shouldRestrict():Boolean{
-            return previewSize.width > 1000 || previewSize.height >1000
+            return mShouldRestrict
         }
+
+        fun getInstance(): Application {
+            return instance
+        }
+
         var object_threshold = 0.5f
         var object_numThreads= 2
         var object_maxResults= 3
@@ -45,7 +56,11 @@ class Application: BaseApplication() {
         instance = this
         MMKVUtils.init(this)
     }
-    fun getInstance():Application{
-        return instance
+
+    fun setPreviewSize(size: Size){
+        val inputRatio = size.width.toFloat() / size.height.toFloat()
+        previewSize = size
+        mShouldRestrict = abs(modelInputRatio - inputRatio) > maxDifference
+        Log.v(TAG,"mShouldRestrict "+mShouldRestrict+" "+modelInputRatio+"/"+inputRatio)
     }
 }
